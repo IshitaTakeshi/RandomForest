@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "dictionary.h"
-#include "error.h"
+#include "../error/error.h"
 
 //TODO rewrite args in pointers
 
