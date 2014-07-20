@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "dataset.h"
-#include "classifier.h"
-#include "visualizer.h"
+#include "tree/dataset.h"
+#include "tree/classifier.h"
+#include "tree/visualizer.h"
 
 
 int n_dim = 4;
