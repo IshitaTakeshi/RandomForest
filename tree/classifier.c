@@ -248,3 +248,18 @@ int *predict(Node *tree, TestDataset *test_dataset) {
 
     return results;
 }
+
+double measure_accuracy(Node *tree, Dataset *dataset) {
+    int result;
+    int i;
+     
+    int n_corrects = 0;
+    for(i=0; i<dataset->size; i++) {
+        result = predict_once(tree, dataset->array[i]->vector);
+        if(result == dataset->array[i]->label) {
+            n_corrects += 1;
+        }
+    }
+ 
+    return (double)n_corrects/(double)dataset->size;
+}

@@ -11,6 +11,7 @@ typedef struct Node {
 
 
 Node *fit(Dataset *dataset, int n_dim, int leaf_size);
-int *predict(Node *tree, TestDataset *test_dataset);
 int predict_once(Node *node, double *vector);
+int *predict(Node *tree, TestDataset *test_dataset);
+double measure_accuracy(Node *tree, Dataset *dataset);
 void free_tree(Node *node);
