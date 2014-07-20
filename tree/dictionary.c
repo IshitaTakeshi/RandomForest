@@ -72,7 +72,7 @@ int *get_keys(Dictionary *dictionary) {
 int *get_values(Dictionary *dictionary) {
     int *values;
     int i;
-    
+
     values = (int *)malloc(dictionary->size*sizeof(int));
 
     for(i=0; i<dictionary->size; i++) {
@@ -89,6 +89,12 @@ int has_key(Dictionary *dictionary, int key) {
             return 1;
         }
     }
-
     return 0;
+}
+
+void free_dictionary(Dictionary *dictionary) {
+    int i;
+    for(i=0; i<dictionary->size; i++) {
+        free(dictionary->maps[i]);
+    }
 }

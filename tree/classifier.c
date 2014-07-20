@@ -3,10 +3,6 @@
 #include "classifier.h"
 #include "dictionary.h"
 
-//TODO enable double features
-//pass args in pointer
-
-
 //Returns a dictionary which 
 //the key is a label and
 //the value is the number of labels in the dataset
@@ -51,20 +47,20 @@ double calc_gini(Dataset *dataset) {
      
     labels = count_labels(dataset);
     count_array = get_values(labels);
+    free_dictionary(labels); 
 
     for(i=0; i<labels->size; i++) {
         r = (double)count_array[i]/(double)dataset->size;
         gini_impurity -= r*r;
     }
 
+    free(count_array);
     return gini_impurity;
 }
-
 
 double calc_randomness(Dataset *dataset) {
     return calc_gini(dataset);
 }
-
 
 double calc_info_gain(Dataset *dataset, DatasetPair *dataset_pair) {
     double p_left = (double)dataset_pair->left->size/(double)dataset->size;
@@ -114,6 +110,8 @@ int find_most_common_label(Dataset *dataset) {
     labels_array = get_keys(labels);
     count_array = get_values(labels);
 
+    free_dictionary(labels);
+
     for(i=0; i<labels->size; i++) {
         if(count_array[i] > max_count) {
             max_count = count_array[i];
@@ -121,6 +119,8 @@ int find_most_common_label(Dataset *dataset) {
         }
     }
     
+    free(labels_array); 
+    free(count_array); 
     return common_label;
 }
 

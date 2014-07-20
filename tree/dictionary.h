@@ -15,3 +15,4 @@ int get_value(Dictionary *dictionary, int key);
 int *get_keys(Dictionary *dictionary);
 int *get_values(Dictionary *dictionary);
 int has_key(Dictionary *dictionary, int key);
+void free_dictionary(Dictionary *dictionary);

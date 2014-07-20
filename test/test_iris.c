@@ -225,7 +225,7 @@ int main(void) {
     vectors = generate_test_vectors();
     dataset = generate_dataset(vectors, test_labels, n_test_labels);
     free(vectors);
-    
+
     accuracy = measure_accuracy(tree, dataset);
     printf("accuracy:%lf\n", accuracy);
 
