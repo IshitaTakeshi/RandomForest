@@ -127,6 +127,7 @@ int find_most_common_label(Dataset *dataset) {
 //TODO add is_in and append_double to a library
 double is_in(double *array, int array_size, double element) {
     int i;
+
     for(i=0; i<array_size; i++) {
         if(array[i] == element) {
             return 1;
@@ -213,14 +214,18 @@ void free_tree(Node *node) {
     free(node);
 }
 
-Node *fit(Dataset *dataset, int n_dim, int leaf_size) {
+Node *fit(double **vectors, int *labels, int n_vectors, int n_dim, int leaf_size) {
     //TODO assert here
     if(leaf_size <= 0) {
         //error();
     }
 
     Node *tree; 
-    tree = construct_tree(dataset, n_dim, leaf_size);
+    Dataset *dataset;    
+    dataset = generate_dataset(vectors, labels, n_vectors);
+    tree = construct_tree(dataset, n_dim, leaf_size); 
+    free_dataset(dataset);
+
     return tree;
 }
 
@@ -236,30 +241,30 @@ int predict_once(Node *node, double *vector) {
     }
 }
 
-int *predict(Node *tree, TestDataset *test_dataset) {
+int *predict(Node *tree, double **vectors, int n_vectors) {
     int *results;
     int i;
-    
-    results = (int *)malloc(test_dataset->size*sizeof(int));
+ 
+    results = (int *)malloc(n_vectors*sizeof(int));
 
-    for(i=0; i<test_dataset->size; i++) {
-        results[i] = predict_once(tree, test_dataset->vectors[i]);
+    for(i=0; i<n_vectors; i++) {
+        results[i] = predict_once(tree, vectors[i]);
     }
 
     return results;
 }
 
-double measure_accuracy(Node *tree, Dataset *dataset) {
+double measure_accuracy(Node *tree, double **vectors, int *labels, int n_vectors) {
     int result;
     int i;
-     
+    
     int n_corrects = 0;
-    for(i=0; i<dataset->size; i++) {
-        result = predict_once(tree, dataset->array[i]->vector);
-        if(result == dataset->array[i]->label) {
+    for(i=0; i<n_vectors; i++) {
+        result = predict_once(tree, vectors[i]);
+        if(result == labels[i]) {
             n_corrects += 1;
         }
     }
  
-    return (double)n_corrects/(double)dataset->size;
+    return (double)n_corrects/(double)n_vectors;
 }

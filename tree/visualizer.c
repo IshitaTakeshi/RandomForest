@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "classifier.h"
+#include "node.h"
 
 void show_tree_(Node *node, int depth) {
     if(node->isleaf) {

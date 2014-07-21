@@ -208,28 +208,31 @@ double **generate_test_vectors() {
 }
 
 int main(void) {
-    Dataset *dataset;
-    Node *tree;
+    int i;
+    int *results;
     double **vectors;
     double accuracy;
+    Node *tree;
 
     vectors = generate_training_vectors();
-    dataset = generate_dataset(vectors, training_labels, n_training_labels);
+    tree = fit(vectors, training_labels, n_training_labels, n_dim, 1);
     free(vectors);
-
-    tree = fit(dataset, n_dim, 1);
-    free_dataset(dataset);
 
     show_tree(tree);
 
     vectors = generate_test_vectors();
-    dataset = generate_dataset(vectors, test_labels, n_test_labels);
-    free(vectors);
+    results = (int *)malloc(n_test_labels*sizeof(int));
+    results = predict(tree, vectors, n_test_labels);
 
-    accuracy = measure_accuracy(tree, dataset);
+    for(i=0; i<n_test_labels; i++) {
+        printf("result:%d answer:%d\n", results[i], test_labels[i]);
+    }
+    free(results);
+
+    accuracy = measure_accuracy(tree, vectors, test_labels, n_test_labels);
     printf("accuracy:%lf\n", accuracy);
-
-    free_dataset(dataset);
+    free(vectors);
+    
     free_tree(tree);
 
     return 0;

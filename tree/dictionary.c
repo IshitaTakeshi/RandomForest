@@ -45,6 +45,7 @@ Dictionary *set_value(Dictionary *dictionary, int key, int value) {
 
 int get_value(Dictionary *dictionary, int key) {
     int i;
+
     for(i=0; i<dictionary->size; i++) {
         if(dictionary->maps[i]->key == key) {
             return dictionary->maps[i]->value;
@@ -60,8 +61,9 @@ int get_value(Dictionary *dictionary, int key) {
 int *get_keys(Dictionary *dictionary) {
     int *keys;
     int i;
-    
+
     keys = (int *)malloc(dictionary->size*sizeof(int));
+
     for(i=0; i<dictionary->size; i++) {
         keys[i] = dictionary->maps[i]->key;
     }
@@ -84,11 +86,13 @@ int *get_values(Dictionary *dictionary) {
 
 int has_key(Dictionary *dictionary, int key) {
     int i;
+
     for(i=0; i<dictionary->size; i++) {
         if(dictionary->maps[i]->key == key) {
             return 1;
         }
     }
+
     return 0;
 }
 
