@@ -221,15 +221,12 @@ int main(void) {
     show_tree(tree);
 
     vectors = generate_test_vectors();
-    results = (int *)malloc(n_test_labels*sizeof(int));
     results = predict(tree, vectors, n_test_labels);
 
     for(i=0; i<n_test_labels; i++) {
         printf("result:%d answer:%d\n", results[i], test_labels[i]);
     }
     printf("\n");
-
-    free(results);
 
     accuracy = measure_accuracy(tree, vectors, test_labels, n_test_labels);
     printf("accuracy:%lf\n", accuracy);

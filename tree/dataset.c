@@ -10,7 +10,7 @@ Data* init_data(int label, double *vector) {
     return data;
 }
 
-Dataset* init_dataset() {
+Dataset* init_dataset(void) {
     Dataset *dataset;
     dataset = (Dataset *)malloc(sizeof(Dataset));
     dataset->size = 0;
@@ -48,7 +48,7 @@ void free_dataset(Dataset *dataset) {
     free(dataset);
 }
 
-TestDataset *init_test_dataset() {
+TestDataset *init_test_dataset(void) {
     TestDataset *test_dataset;
     test_dataset = (TestDataset *)malloc(sizeof(TestDataset));
     test_dataset->size = 0;
@@ -72,7 +72,7 @@ void free_test_dataset(TestDataset *test_dataset) {
     free(test_dataset);
 }
 
-DatasetPair *init_dataset_pair() {
+DatasetPair *init_dataset_pair(void) {
     DatasetPair *dataset_pair;
     dataset_pair = (DatasetPair *)malloc(sizeof(DatasetPair));
     return dataset_pair;

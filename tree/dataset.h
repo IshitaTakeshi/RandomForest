@@ -26,15 +26,16 @@ typedef struct DatasetPair {
 
 
 Data* init_data(int label, double *vector);
-Dataset* init_dataset();
+Dataset* init_dataset(void);
 Dataset *append_dataset(Dataset *dataset, Data *data);
 Dataset *generate_dataset(double **vectors, int *labels, int n_vectors);
 void free_dataset(Dataset *dataset);
 
-TestDataset *init_test_dataset();
+TestDataset *init_test_dataset(void);
 TestDataset *generate_test_dataset(double **vectors, int n_vectors);
 void free_test_dataset(TestDataset *test_dataset);
 
-DatasetPair *init_dataset_pair();
+DatasetPair *init_dataset_pair(void);
 void free_dataset_pair(DatasetPair *dataset_pair);
+
 #endif /* DATASET_H */
