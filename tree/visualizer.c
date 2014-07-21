@@ -22,4 +22,5 @@ void show_tree_(Node *node, int depth) {
 
 void show_tree(Node *node) {
     show_tree_(node, 0);
+    printf("\n");
 }

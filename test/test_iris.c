@@ -227,6 +227,8 @@ int main(void) {
     for(i=0; i<n_test_labels; i++) {
         printf("result:%d answer:%d\n", results[i], test_labels[i]);
     }
+    printf("\n");
+
     free(results);
 
     accuracy = measure_accuracy(tree, vectors, test_labels, n_test_labels);
