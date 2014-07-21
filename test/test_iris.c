@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "../tree/dataset.h"
 #include "../tree/classifier.h"
 #include "../tree/visualizer.h"
 
