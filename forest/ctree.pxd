@@ -3,8 +3,8 @@ cdef extern from "../tree/node.h":
         pass
 
 cdef extern from "../tree/classifier.h": 
-    Node *fit(double **vectors, int *labels, int n_vectors, int n_dim, 
-              int leaf_size)
+    void init_classifier(int n_trials, int leaf_size, int randomized)
+    Node *fit(double **vectors, int *labels, int n_vectors, int n_dim)
     int *predict(Node *tree, double **vectors, int n_vectors)
     void free_tree(Node *tree)
 

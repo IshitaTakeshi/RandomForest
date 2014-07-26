@@ -11,7 +11,7 @@ test_labels = labels[N:]
 
 import tree
 
-n_trees = 2
+n_trees = 24
 classifier = RandomForest(n_trees)
 classifier.fit(training_vectors, training_labels)
 results = classifier.predict(test_vectors)

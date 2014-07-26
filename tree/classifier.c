@@ -2,7 +2,32 @@
 #include <stdlib.h>
 #include "classifier.h"
 #include "dictionary.h"
+#include "criterions.h"
+#include "node.h"
+#include "../random/random.h"
 #include "../error/error.h"
+
+int N_TRIALS = 1;
+int LEAF_SIZE = 1;
+int RANDOMIZED = 0;
+
+void init_classifier(int n_trials, int leaf_size, int randomized) {
+    //TODO make error messages fluent
+    if(leaf_size <= 0) {
+        fatal_error("leaf_size must be larger than 0\n");
+        exit(-1);
+    }
+    
+    if(n_trials <= 0) {
+        fatal_error("n_trials must be larger than 0\n");
+        exit(-1);
+    }
+
+    N_TRIALS = n_trials;
+    LEAF_SIZE = leaf_size;
+    RANDOMIZED = randomized;
+    init_random();
+}
 
 //Returns a dictionary which 
 //the key is a label and
@@ -125,31 +150,12 @@ int find_most_common_label(Dataset *dataset) {
     return common_label;
 }
 
-//TODO add is_in and append_double to a library
-double is_in(double *array, int array_size, double element) {
-    int i;
-
-    for(i=0; i<array_size; i++) {
-        if(array[i] == element) {
-            return 1;
-        }
-    }
-    return 0;
-}
-
-double *append_double(double *array, int array_size, double element) {
-    array = (double *)realloc(array, (array_size+1)*sizeof(double));
-    array[array_size] = element;
-    return array;
-}
-
-Node *construct_tree(Dataset *dataset, int n_dim, int leaf_size) {
+Node *construct_tree(Dataset *dataset, int n_dim) {
     int key, best_key;
     double best_info_gain;
     double criterion, best_criterion;
-    double *criterions;
-    int criterions_size;
     double info_gain;
+    Criterions *criterions;
     DatasetPair *dataset_pair, *best_dataset_pair;
     Data *data; 
     int i, t;
@@ -157,20 +163,17 @@ Node *construct_tree(Dataset *dataset, int n_dim, int leaf_size) {
     best_info_gain = 0;
 
     for(key=0; key<n_dim; key++) {
-        criterions_size = 0;
-        criterions = (double *)malloc(sizeof(double));
-
+        criterions = init_criterions();
         for(i=0; i<dataset->size; i++) {
             data = dataset->array[i];
             t = data->vector[key];
-            if(!is_in(criterions, criterions_size, t)) {
-                criterions = append_double(criterions, criterions_size, t);
-                criterions_size += 1;
+            if(!is_in(criterions, t)) {
+                criterions = append_criterion(criterions, t);
             }
         }
-        
-        for(i=0; i<criterions_size; i++) {
-            criterion = criterions[i];
+         
+        for(i=0; i<criterions->size; i++) {
+            criterion = criterions->criterions[i];
             dataset_pair = divide(dataset, key, criterion);
             info_gain = calc_info_gain(dataset, dataset_pair);
             if(info_gain > best_info_gain &&
@@ -183,26 +186,70 @@ Node *construct_tree(Dataset *dataset, int n_dim, int leaf_size) {
             }
         }
 
-        free(criterions);
+        free_criterions(criterions);
     }
     
-    Node *node;
-    node = (Node *)malloc(sizeof(Node));
- 
-    if(best_info_gain <= 0 || dataset->size <= leaf_size) {
-        node->left = NULL;
-        node->right = NULL;
-        node->isleaf = 1;
-        node->label = find_most_common_label(dataset);
-        return node;
+    if(best_info_gain <= 0 || dataset->size <= LEAF_SIZE) {
+        int label = find_most_common_label(dataset);
+        return construct_node(NULL, NULL, label, 1, -1, -1);
     }
 
-    node->isleaf = 0;
-    node->left = construct_tree(best_dataset_pair->left, n_dim, leaf_size);
-    node->right = construct_tree(best_dataset_pair->right, n_dim, leaf_size);
-    node->key = best_key;
-    node->criterion = best_criterion;
-    return node;
+    Node *left, *right; 
+    left = construct_tree(best_dataset_pair->left, n_dim);
+    right = construct_tree(best_dataset_pair->right, n_dim);
+    return construct_node(left, right, -1, 0, best_key, best_criterion);
+}
+
+Node *construct_randomized_tree(Dataset *dataset, int n_dim) {
+    int key, best_key;
+    double best_info_gain;
+    double criterion, best_criterion;
+    double info_gain;
+    Criterions *criterions;
+    DatasetPair *dataset_pair, *best_dataset_pair;
+    Data *data; 
+    double t;
+    int i, r;
+    
+    best_info_gain = 0;
+    
+    for(key=0; key<n_dim; key++) {
+        criterions = init_criterions();
+        for(i=0; i<dataset->size; i++) {
+            data = dataset->array[i];
+            t = data->vector[key];
+            if(!is_in(criterions, t)) {
+                criterions = append_criterion(criterions, t);
+            }
+        }
+         
+        for(i=0; i<N_TRIALS; i++) {
+            r = random_int(criterions->size);
+            criterion = criterions->criterions[r];
+
+            dataset_pair = divide(dataset, key, criterion);
+            info_gain = calc_info_gain(dataset, dataset_pair);
+            if(info_gain > best_info_gain &&
+               dataset_pair->left->size > 0 &&
+               dataset_pair->right->size > 0) {
+                best_info_gain = info_gain;
+                best_key = key;
+                best_criterion = criterion;
+                best_dataset_pair = dataset_pair;
+            }
+        }
+        free_criterions(criterions);
+    }
+    
+    if(best_info_gain <= 0 || dataset->size <= LEAF_SIZE) {
+        int label = find_most_common_label(dataset);
+        return construct_node(NULL, NULL, label, 1, -1, -1);
+    }
+
+    Node *left, *right; 
+    left = construct_tree(best_dataset_pair->left, n_dim);
+    right = construct_tree(best_dataset_pair->right, n_dim);
+    return construct_node(left, right, -1, 0, best_key, best_criterion);
 }
 
 void free_tree(Node *node) {
@@ -215,17 +262,19 @@ void free_tree(Node *node) {
     free(node);
 }
 
-Node *fit(double **vectors, int *labels, int n_vectors, int n_dim, int leaf_size) {
+Node *fit(double **vectors, int *labels, int n_vectors, int n_dim) {
     //TODO assert here
-    if(leaf_size <= 0) {
-        fatal_error("Leaf size must be larger than 0\n");
-        exit(-1);
-    }
 
     Node *tree; 
     Dataset *dataset;    
     dataset = generate_dataset(vectors, labels, n_vectors);
-    tree = construct_tree(dataset, n_dim, leaf_size); 
+    
+    if(RANDOMIZED) {
+        tree = construct_randomized_tree(dataset, n_dim); 
+    } else {
+        tree = construct_tree(dataset, n_dim);
+    }
+
     free_dataset(dataset);
 
     return tree;

@@ -38,6 +38,9 @@ cdef class DecisionTree:
     cdef void free_c_labels(self, int *c_labels):
         free(c_labels)
 
+    def __init__(self, leaf_size, n_trials):
+        ctree.init_classifier(n_trials, leaf_size, 1)
+
     def fit(self, np.ndarray[np.float64_t, ndim=2] vectors, 
             np.ndarray[np.int8_t, ndim=1] labels, leaf_size):
  
@@ -50,8 +53,7 @@ cdef class DecisionTree:
         c_vectors = self.generate_c_vectors(vectors)
         c_labels = self.generate_c_labels(labels)
 
-        self.tree = ctree.fit(c_vectors, c_labels, 
-                              n_vectors, n_dim, leaf_size)
+        self.tree = ctree.fit(c_vectors, c_labels, n_vectors, n_dim)
         
         self.free_c_vectors(c_vectors, n_vectors)
         self.free_c_labels(c_labels)

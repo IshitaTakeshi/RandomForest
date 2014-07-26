@@ -10,6 +10,9 @@ extensions = [
                   "../tree/dataset.c",
                   "../tree/dictionary.c",
                   "../tree/visualizer.c",
+                  "../tree/criterions.c",
+                  "../tree/node.c",
+                  "../random/random.c",
                   "../error/error.c"
               ]
     )

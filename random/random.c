@@ -1,14 +1,24 @@
 #include <stdint.h>
+#include <time.h>
 
-uint64_t x = 10;
 
-void set_seed(unsigned int seed) {
-    x = (uint64_t)seed;
+#include "random.h"
+
+uint64_t x = 0;
+
+void init_random(void) {
+    x = (int)time(NULL);
 }
 
 uint64_t next() {
 	x ^= x >> 12;
 	x ^= x << 25;
 	x ^= x >> 27;
-	return x * 2685821657736338717LL;
+	x = x * 2685821657736338717LL;
+    return x;
+}
+
+int random_int(int high) {
+    uint64_t r = next();
+    return r%high;
 }

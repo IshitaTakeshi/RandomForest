@@ -214,18 +214,21 @@ int main(void) {
     Node *tree;
 
     vectors = generate_training_vectors();
-    tree = fit(vectors, training_labels, n_training_labels, n_dim, 1);
+    init_classifier(1, 10, 1);
+    for(i=0; i<10; i++) {
+        tree = fit(vectors, training_labels, n_training_labels, n_dim);
+        show_tree(tree);
+    }
     free(vectors);
 
-    show_tree(tree);
 
     vectors = generate_test_vectors();
     results = predict(tree, vectors, n_test_labels);
-
+    /*
     for(i=0; i<n_test_labels; i++) {
         printf("result:%d answer:%d\n", results[i], test_labels[i]);
     }
-    printf("\n");
+    */
 
     free(results);
 

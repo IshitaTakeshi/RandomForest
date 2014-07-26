@@ -7,9 +7,14 @@ training_labels = labels[:N]
 test_vectors = vectors[N:]
 test_labels = labels[N:]
 
-tree = DecisionTree(leaf_size=1)
-tree.fit(training_vectors, training_labels)
-results = tree.predict(test_vectors)
+import copy
+tree = DecisionTree(leaf_size=1, n_trials=1)
+for _ in range(20):
+    tree.fit(training_vectors, training_labels)
+    t = copy.deepcopy(tree)
+    print(id(t))
+    #tree.show()
 
+results = tree.predict(test_vectors)
 print("results:{}".format(results))
 print("answers:{}".format(test_labels))

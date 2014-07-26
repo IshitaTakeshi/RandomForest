@@ -10,4 +10,7 @@ typedef struct Node {
     double criterion;
 } Node;
 
+Node *construct_node(Node *left, Node *right, int label, int isleaf, 
+                     int key, double criterion);
+
 #endif /* NODE_H */
