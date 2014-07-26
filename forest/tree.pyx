@@ -65,13 +65,11 @@ cdef class DecisionTree:
         ctree.show_tree(self.tree)
 
     def predict(self, np.ndarray[np.float64_t, ndim=2] vectors):
-        cdef int n_vectors = len(vectors)
-        cdef int n_dim = len(vectors[0])
-        
-        cdef int *results        
+        cdef int n_vectors = len(vectors) 
         cdef double **c_vectors
+        cdef int *results        
+        
         c_vectors = self.generate_c_vectors(vectors)
-
         results = ctree.predict(self.tree, c_vectors, n_vectors) 
 
         self.free_c_vectors(c_vectors, n_vectors)
@@ -80,6 +78,23 @@ cdef class DecisionTree:
         for i in range(n_vectors):
             np_results[i] = <np.int8_t>results[i]
         return np_results
+    
+    def measure_accuracy(self, np.ndarray[np.float64_t, ndim=2] vectors, 
+                         np.ndarray[np.int8_t, ndim=1] labels):
+        cdef double **c_vectors
+        cdef int *c_labels
+        cdef int n_vectors = len(vectors)
+        cdef double accuracy
+
+        c_vectors = self.generate_c_vectors(vectors)
+        c_labels = self.generate_c_labels(labels)
+        
+        accuracy = ctree.measure_accuracy(self.tree, c_vectors, c_labels, 
+                                          n_vectors)
+        
+        self.free_c_vectors(c_vectors, n_vectors)
+        self.free_c_labels(c_labels)
+        return accuracy
 
     def __dealloc__(self):
         if(self.tree is not NULL): 
