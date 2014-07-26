@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "classifier.h"
 #include "dictionary.h"
+#include "../error/error.h"
 
 //Returns a dictionary which 
 //the key is a label and
@@ -217,7 +218,8 @@ void free_tree(Node *node) {
 Node *fit(double **vectors, int *labels, int n_vectors, int n_dim, int leaf_size) {
     //TODO assert here
     if(leaf_size <= 0) {
-        //error();
+        fatal_error("Leaf size must be larger than 0\n");
+        exit(-1);
     }
 
     Node *tree; 
