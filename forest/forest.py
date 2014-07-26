@@ -3,15 +3,16 @@ import numpy as np
 import tree
 
 class RandomForest(object):
-    def __init__(self, n_trees):
+    def __init__(self, n_trees, leaf_size=1):
         self.n_trees = n_trees
+        self.leaf_size = leaf_size
         self.trees = []
 
     def fit(self, X, y):
         self.trees = []
         for i in range(self.n_trees):
-            classifier = tree.DecisionTree()
-            classifier = classifier.fit(X, y, leaf_size=8)
+            classifier = tree.DecisionTree(self.leaf_size)
+            classifier = classifier.fit(X, y)
             self.trees.append(classifier)
         return self
 
