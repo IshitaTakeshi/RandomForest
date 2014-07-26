@@ -3,9 +3,9 @@ from distutils.extension import Extension
 from Cython.Build import cythonize
 
 extensions = [
-    Extension("tree", 
+    Extension("libtree", 
               [
-                  "tree.pyx", 
+                  "libtree.pyx", 
                   "../tree/classifier.c", 
                   "../tree/dataset.c",
                   "../tree/dictionary.c",
@@ -15,4 +15,4 @@ extensions = [
     )
 ]
 
-setup(ext_modules=cythonize(extensions, gdb_debug=True))
+setup(ext_modules=cythonize(extensions))
